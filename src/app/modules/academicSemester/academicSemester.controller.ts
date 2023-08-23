@@ -4,6 +4,7 @@ import httpStatus from 'http-status';
 import catchAsync from '../../../shared/catchAsync';
 import pick from '../../../shared/pick';
 import sendResponse from '../../../shared/sendResponse';
+import { AcademicSemesterFilterableFields } from './academicSemester.constant';
 import { AcademicSemesterService } from './academicSemester.service';
 
 const createAcademicSemester = catchAsync(
@@ -23,12 +24,7 @@ const createAcademicSemester = catchAsync(
 
 const getAllAcademicSemesters = catchAsync(
   async (req: Request, res: Response) => {
-    const filters = pick(req.query, [
-      'searchTerm',
-      'code',
-      'startMonth',
-      'endMonth',
-    ]);
+    const filters = pick(req.query, AcademicSemesterFilterableFields);
     const options = pick(req.query, ['limit', 'page', 'sortBy', 'sortOrder']);
     const result = await AcademicSemesterService.getAllAcademicSemesters(
       filters,
@@ -45,7 +41,23 @@ const getAllAcademicSemesters = catchAsync(
   }
 );
 
+const getSingleAcademicSemester = catchAsync(
+  async (req: Request, res: Response) => {
+    const result = await AcademicSemesterService.getSingleAcademicSemester(
+      req.params.id
+    );
+
+    sendResponse<AcademicSemester>(res, {
+      statusCode: httpStatus.OK,
+      success: true,
+      message: 'Academic semester retrieved 😊',
+      data: result,
+    });
+  }
+);
+
 export const AcademicSemesterController = {
   createAcademicSemester,
   getAllAcademicSemesters,
+  getSingleAcademicSemester,
 };
